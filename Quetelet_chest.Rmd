@@ -1,0 +1,141 @@
+---
+title: "Fitting Normal Distribution"
+author: "coop711"
+date: "2015년 3월 8일"
+output: html_document
+---
+자료 생성
+---------
+- 케틀레가 작성한 스코틀랜드 군인 5738명의 가슴둘레(인치) 분포표로부터
+```{r}
+chest.circum<-c(rep(33,3),rep(34,18),rep(35,81),rep(36,185),rep(37,420), rep(38,749),rep(39,1073),rep(40,1079),rep(41,934),rep(42,658),rep(43,370),rep(44,92),rep(45,50),rep(46,21),rep(47,4),rep(48,1))
+```
+- 33인치인 사람이 3명, 34인치인 사람이 18명 등으로 기록되어 있으나 이는 구간의 가운데로 파악하여야 함.
+
+기초통계와 표준편차 계산
+------------------------
+```{r}
+summary(chest.circum)
+sd(chest.circum)
+```
+히스토그램으로 나타내기
+-----------------------
+- 히스토그램을 직관적으로 그려보면 $y$축은 돗수가 기본값임을 알 수 있음.
+
+```{r fig.width=5, fig.height=5}
+hist(chest.circum)
+```
+
+- 정규분포와 비교하기 위해서 $y$축을 확률로 나타내려면
+
+```{r fig.width=5, fig.height=5}
+hist(chest.circum,prob=T)
+```
+
+히스토그램의 내부 계산
+----------------------
+- 실제로 이 히스토그램을 그리는 데 계산된 값들은?
+```{r}
+h.circum<-hist(chest.circum, plot=F)
+h.circum
+```
+- 평균값과 표준편차로부터 히스토그램의 위치가 0.5만큼 왼쪽으로 치우쳐 있다는 것을 알 수 있음. 제자리에 옮겨 놓기 위해서 breaks 매개변수를 32.5부터 48.5까지 1간격으로 설정
+
+```{r fig.width=5, fig.height=5}
+hist(chest.circum,prob=T,breaks=32.5:48.5)
+```
+
+- 히스토그램을 보기 쉽게 하기 위해서 메인 타이틀과 서브 타이틀, x축 라벨, y축 라벨 설정
+```{r fig.width=5, fig.height=5}
+main.title<-"Fitting Normal Distribution"
+sub.title<-"Chest Circumferences of Scottish Soldiers"
+x.lab<-"Inches"
+y.lab<-"Proportion"
+hist(chest.circum,breaks=32.5:48.5,prob=T,main=main.title,sub=sub.title,xlab=x.lab,ylab=y.lab)
+```
+
+평균 $\pm$  표준편차의 의미
+---------------------------
+
+- 평균을 중심으로 $\pm$표준편차 만큼 떨어진 자료를 붉은 색 수직점선으로 표시.
+```{r fig.width=5, fig.height=5}
+hist(chest.circum,breaks=32.5:48.5,prob=T,main=main.title,sub=sub.title,xlab=x.lab,ylab=y.lab)
+abline(v=c(38,42),lty=2,col="red")
+```
+
+- 그 사이의 영역을 빗금으로 표시하기 위하여 다각형의 좌표를 계산
+
+```{r}
+h.chest<-hist(chest.circum, breaks=32.5:48.5, plot=F)
+h.chest
+h.chest$density[6:10]
+y<-h.chest$density[6:10]
+```
+
+- 5개의 직사각형으로 파악하고 향후 면적 계산을 쉽게 하기 위하여 다음과 같이 좌표 설정
+
+```{r fig.width=5, fig.height=5}
+x.coord<-c(38,38.5:41.5,42,42,rep(41.5:38.5,each=2),38,38)
+y.coord<-c(rep(0,6),rep(rev(y),each=2),0)
+hist(chest.circum,breaks=32.5:48.5,prob=T,main=main.title,sub=sub.title,xlab=x.lab,ylab=y.lab)
+polygon(x.coord,y.coord,density=20)
+```
+
+- 이론적으로 빗금친 부분의 면적은 pnorm(1)-pnorm(-1)=`r pnorm(1)-pnorm(-1)`에 가까울 것으로 예상. 5개의 직사각형의 면적을 구하여 합하는 과정은 다음과 같음.
+```{r}
+x.coord[1:6]
+y
+diff(x.coord[1:6])
+diff(x.coord[1:6])*y
+sum(diff(x.coord[1:6])*y)
+```
+
+data.frame으로 관리하기
+----------------------
+
+- 자료 관리의 편의성을 높이기 위하여 가슴둘레 자료를 data.frame으로 만드는 방법은
+```{r}
+chest<-33:48
+freq<-c(3,18,81,185,420,749,1073,1079,934,658,370,92,50,21,4,1)
+sum(freq)
+quetelet.chest<-data.frame(chest,freq)
+quetelet.chest$prob<-quetelet.chest$freq/sum(quetelet.chest$freq)
+```
+
+- 위와 같이 하나의 벡터로 모아서 히스토그램 작업을 하려면 다음과 같이 loop 이용
+```{r}
+quetelet.chest.vec<-rep(33,3)
+for (i in 34:48) {
+quetelet.chest.vec<-c(quetelet.chest.vec,rep(i,quetelet.chest$freq[i-32]))
+}
+length(quetelet.chest.vec)
+```
+- 5738개의 자료를 확인하고 종전과 같은 작업 수행
+```{r fig.width=5, fig.height=5}
+hist(quetelet.chest.vec,breaks=32.5:48.5,prob=T,main=main.title,sub=sub.title,xlab=x.lab,ylab=y.lab)
+abline(v=c(38,42),lty=2,col="red")
+```
+
+정규분포 밀도함수와 비교
+------------------------
+- 이론적인 정규분포 밀도함수 곡선을 히스토그램에 덧붙여 그림.
+
+```{r fig.width=5, fig.height=5}
+mean.chest<-mean(quetelet.chest.vec)
+sd.chest<-sd(quetelet.chest.vec)
+x<-seq(32.5,48.5,length=1000)
+y.norm<-dnorm(x,mean=mean.chest,sd=sd.chest)
+hist(quetelet.chest.vec,breaks=32.5:48.5,prob=T,main=main.title,sub=sub.title,xlab=x.lab,ylab=y.lab)
+lines(x,y.norm,col="red")
+```
+
+x축의 눈금 조정
+---------------
+```{r fig.width=5, fig.height=5}
+hist(chest.circum,breaks=32.5:48.5,prob=T,main=main.title,sub=sub.title,xlab=x.lab,ylab=y.lab,axes=F)
+axis(side=1,at=seq(32,48,by=2),labels=paste(seq(32,48,by=2)))
+axis(side=2)
+```
+
+
+
