@@ -178,5 +178,14 @@ axis(side=1, at=seq(32,48,by=2), labels=paste(seq(32,48, by=2)))
 axis(side=2)
 ```
 
+### ggplot
 
+* data frame으로 변환하여 접근
+
+```{r}
+library(ggplot2)
+chest.long.df <- data.frame(chest = chest.long)
+ggplot(chest.long.df, aes(x = chest)) + geom_histogram(aes(y = ..density..), binwidth=1, breaks = 32.5:48.5, fill = "white", colour = "black") +
+  geom_vline(xintercept = c(38, 42), linetype = "dotted", colour = "red")
+```
 

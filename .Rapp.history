@@ -1,0 +1,70 @@
+load("/Users/coop2711/Dropbox/Works/Class/Stat_Graphics/quetelet.soldiers/Quetelet_Chest.RData")#
+
+h.chest#
+
+quetelet.chest#
+
+chest<-quetelet.chest[,1:2]#
+
+chest.table<-chest#
+
+chest.long<-rep(chest.table$chest, chest.table$freq)#
+
+str(chest.long)#
+
+save(file="quetelet_chest.rda", list=c("chest.table", "chest.long"))#
+
+barplot(chest.table$freq/sum(chest.table$freq), breaks=32.5:48.5)#
+
+barplot#
+
+?barplot#
+
+barplot(chest.table$freq/sum(chest.table$freq), names.args=33:48, space=0)#
+#
+
+barplot(chest.table$freq/sum(chest.table$freq), names.args=paste(33:48), space=0)#
+#
+#
+
+barplot(chest.table$freq/sum(chest.table$freq), names.arg=paste(33:48), space=0)#
+#
+#
+#
+
+chest.circum#
+
+chest.long#
+
+load("/Users/coop2711/Dropbox/Works/Class/Stat_Graphics/lottery/lottery.rda")#
+
+rm(list=ls())#
+
+load("/Users/coop2711/Dropbox/Works/Class/Stat_Graphics/lottery/lottery.rda")#
+#
+
+load("/Users/coop2711/Dropbox/Works/Class/Case_studies_in_stat/R.WD/sejong/sejong_poll_kor.rda")#
+
+sejong.poll.kr#
+
+sejong.poll.kr[, c(4, 3, 2, 1)]#
+#
+
+str(sejong.poll.kr)#
+
+sejong.poll.kr.2<-sejong.poll.kr[, c(4, 3, 2, 1)]#
+#
+#
+
+sejong.poll.kr.2#
+
+save(file="sejong_poll_kr_2.rda", list="sejong.poll.kr.2")#
+
+getwd()#
+
+load("/Users/coop2711/Dropbox/Works/Class/Case_studies_in_stat/R.WD/Economic_Activity/NDI_kor.rda")#
+
+ls()#
+
+q("no")#
+
