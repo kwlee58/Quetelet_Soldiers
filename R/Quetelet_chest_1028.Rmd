@@ -9,8 +9,9 @@ output: html_document
 
 ### 책에서
 
-```{r, test}
-getwd()
+```{r, packages}
+library(pander)
+library(knitr)
 ```
 
 <img src = "../pics/quetelet_soldiers.png" width = "320"/>
@@ -18,60 +19,51 @@ getwd()
 ![Quetelet's frequency table](../pics/quetelet_soldiers.png)
 
 
-돗수분포표 
----------
-- 케틀레가 작성한 스코틀랜드 군인 5738명의 가슴둘레(인치) 분포표를 옮기면 
+### 돗수분포표 
 
-```{r}
-chest<-33:48
-freq<-c(3,18,81,185,420,749,1073,1079,934,658,370,92,50,21,4,1)
-chest.table<-data.frame(Chest=chest, Freq=freq)
-chest.table
+* 케틀레가 작성한 스코틀랜드 군인 5738명의 가슴둘레(인치) 분포표를 옮기면 
+
+```{r, data setup}
+chest <- 33:48
+freq <- c(3,18,81,185,420,749,1073,1079,934,658,370,92,50,21,4,1)
+(chest.table <- data.frame(Chest=chest, Freq=freq))
 str(chest.table)
+pander(chest.table)
+kable(chest.table)
+kable(chest.table, align=c("c", "c"))
 ```
 
-- 33인치인 사람이 3명, 34인치인 사람이 18명 등으로 기록되어 있으나 이는 구간의 가운데로 이해하여야 함.
-
----
-
----
-
----
-
----
-
----
-
----
-
----
+* 33인치인 사람이 3명, 34인치인 사람이 18명 등으로 기록되어 있으나 이는 구간의 가운데로 이해하여야 함.
 
 
-확률 히스토그램
----------------
+### 확률 히스토그램
 
-- `barplot(height, ...)` 은 기본적으로 `height`만 주어지면 그릴 수 있음. 확률 히스토그램의 기둥 면적의 합은 1이므로, 각 기둥의 높이는 각 계급의 돗수를 전체 돗수, 5738로 나눠준 값임.
+* `barplot(height, ...)` 은 기본적으로 `height`만 주어지면 그릴 수 있음. 확률 히스토그램의 기둥 면적의 합은 1이므로, 각 기둥의 높이는 각 계급의 돗수를 전체 돗수, 5738로 나눠준 값임.
 
-```{r fig.width=6, fig.height=3.5}
+```{r, barplot first, fig.width=6, fig.height=3.5}
 barplot(chest.table$Freq/5738)
 ```
 
-- 각 막대의 이름은 계급을 나타내는 가슴둘레 값으로 표현할 수 있고, 막대 간의 사이를 띄울 필요가 없고, 디폴트 값으로 주어진 회색 보다는 차라리 백색이 나으므로 이를 설정해 주면,
+* 각 막대의 이름은 계급을 나타내는 가슴둘레 값으로 표현할 수 있고, 막대 간의 사이를 띄지 않으며, 디폴트 값으로 주어진 회색 보다는 차라리 백색이 나으므로 이를 설정해 주면,
 
-```{r fig.width=6, fig.height=3.5}
+```{r, barplot white, fig.width=6, fig.height=3.5}
 barplot(chest.table$Freq/5738, names.arg=33:48, space=0, col="white")
 ``` 
 
-- 확률 히스토그램의 정의에 따라 이 막대들의 면적을 합하면 1이 됨에 유의.
+* 확률 히스토그램의 정의에 따라 이 막대들의 면적을 합하면 1이 됨에 유의.
 
-기초통계와 표준편차 계산
-------------------------
+### 기초통계와 표준편차 계산
 
-- 33인치가 3명, 34인치가 18명 등을 한 줄의 긴 벡터로 나타내어야 평균과 표준편차를 쉽게 계산할 수 있으므로 long format으로 바꾸면,
+* 33인치가 3명, 34인치가 18명 등을 한 줄의 긴 벡터로 나타내어야 평균과 표준편차를 쉽게 계산할 수 있으므로 long format으로 바꾸면,
 
-```{r}
+```{r, long format data frame}
 chest.long<-rep(chest.table$Chest, chest.table$Freq)
 str(chest.long)
+```
+
+```{r}
+library(reshape2)
+melt
 ```
 
 -`chest.long` 을 이용하여 기초통계와 표준편차를 계산하면,
