@@ -213,16 +213,44 @@ axis(side = 2)
 
 ### ggplot
 
-* data frame으로 변환하여 접근
+* data frame으로 작업. 
+
+#### Basic histogram
 
 ```{r, ggplots, fig.width = 6, fig.height = 4}
 library(ggplot2)
 (g1 <- ggplot(data.frame(chest.long), aes(x = chest.long)) + geom_histogram(aes(y = ..density..), binwidth = 1, breaks = 32.5:48.5, fill = "white", colour = "black"))
+```
+
+####  Mean $\pm$ SD 
+
+```{r, mean plus minus sd, , fig.width = 6, fig.height = 4}
 (g2 <- g1 + geom_vline(xintercept = c(38, 42), linetype = "dotted", colour = "red")) 
+```
+
+#### x-axis label and main title
+
+``````{r, xlab and ggtitle, fig.width = 6, fig.height = 4}
 (g3 <- g2 + theme_bw() + xlab("Chest Circumferences (Inches)") + ggtitle("Quetelet's Scottish Soldiers Data"))
+```
+
+#### Shading the area
+
+```{r, polygon, fig.width = 6, fig.height = 4}
 (g4 <- g3 + geom_polygon(aes(x = x.coord, y = y.coord), data = data.frame(x.coord, y.coord), alpha = 0.3, fill = "red"))
+```
+
+#### Normal curve added
+
+```{r, normal curve, fig.width = 6, fig.height = 4}
 x.curve <- seq(32.5, 48.5, length = 100)
 y.curve <- dnorm(x.curve, mean = mean.chest, sd = sd.chest)
 (g5 <- g4 + geom_line(aes(x = x.curve, y = y.curve), data = data.frame(x.curve, y.curve), colour = "blue"))
+```
+
+#### x-axis tick marks 
+
+```{r, tick marks, fig.width = 6, fig.height = 4}
+(g6 <- g5 + scale_x_continuous(breaks = seq(32, 48, by = 2), labels = seq(32, 48, by = 2)))
 ```
 
