@@ -139,8 +139,9 @@ hist(chest.long, probability = TRUE, breaks = 32.5:48.5)
 
 ```{r, annotations, fig.width = 6, fig.height = 4}
 main.title <- "Fitting Normal Distribution"
-sub.title <- "Chest Circumferences of Scottish Soldiers"
-x.lab <- "Inches"
+# sub.title <- "Chest Circumferences of Scottish Soldiers"
+sub.title <- ""
+x.lab <- "Chest Circumferences (inches)"
 y.lab <- "Proportion"
 hist(chest.long, breaks = 32.5:48.5, probability = TRUE, main = main.title, sub = sub.title, xlab = x.lab, ylab = y.lab)
 ```
@@ -166,21 +167,26 @@ y <- h.chest.2$density[6:10]
 * 5개의 직사각형으로 파악하고 향후 면적 계산을 쉽게 하기 위하여 다음과 같이 좌표 설정
 
 ```{r, 5 rectangles, fig.width = 6, fig.height = 4}
-x.coord<-c(38, 42, 42, rep(41.5:38.5, each = 2), 38)
-y.coord<-c(rep(0, 2), rep(rev(y), each = 2))
+mean.chest <- mean(chest.long)
+sd.chest <- sd(chest.long)
+x.lower <- mean.chest - sd.chest
+x.upper <- mean.chest + sd.chest
+x.coord<-rep(c(x.lower, 38.5:41.5, x.upper), each = 2)
+y.coord<-c(0, rep(y, each = 2), 0)
 hist(chest.long, breaks = 32.5:48.5, probability = TRUE, main = main.title, sub = sub.title, xlab = x.lab, ylab = y.lab)
-abline(v = c(38, 42), lty = 2, col = "red")
+abline(v = c(x.lower, x.upper), lty = 2, col = "red")
 polygon(x.coord, y.coord, density = 20)
 ```
 
 * 이론적으로 빗금친 부분의 면적은 `pnorm(1)-pnorm(-1)=``r pnorm(1)-pnorm(-1)`에 가까울 것으로 예상. 5개의 직사각형의 면적을 구하여 합하는 과정은 다음과 같음.
 
 ```{r, area of shaded area}
-(x <- c(38, 38.5:41.5, 42))
+options(digits = 2)
+x.area <- c(x.lower, 38.5:41.5, x.upper)
 y
-diff(x)
-diff(x) * y
-sum(diff(x) * y)
+diff(x.area)
+diff(x.area) * y
+sum(diff(x.area) * y)
 ```
 
 ### Comparison with normal curve
@@ -188,12 +194,11 @@ sum(diff(x) * y)
 *  이론적인 정규분포 밀도함수 곡선을 히스토그램에 덧붙여 그림.
 
 ```{r, normal curve added, fig.width = 6, fig.height = 4}
-mean.chest <- mean(chest.long)
-sd.chest <- sd(chest.long)
 x.chest <- seq(32.5, 48.5, length = 1000)
 y.norm <- dnorm(x.chest, mean = mean.chest, sd = sd.chest)
 hist(chest.long, breaks = 32.5:48.5, probability = TRUE, main = main.title, sub = sub.title, xlab = x.lab, ylab = y.lab)
-abline(v = c(38, 42), lty = 2, col = "red")
+abline(v = c(x.lower, x.upper), lty = 2, col = "red")
+# abline(v = c(38, 42), lty = 2, col = "red")
 polygon(x.coord, y.coord, density = 20)
 lines(x.chest, y.norm, col = "red")
 ```
@@ -204,7 +209,7 @@ lines(x.chest, y.norm, col = "red")
 
 ```{r, x axis, fig.width = 6, fig.height = 4}
 hist(chest.long, breaks = 32.5:48.5, probability = TRUE, main = main.title, sub = sub.title, xlab = x.lab, ylab = y.lab, axes = FALSE)
-abline(v = c(38, 42), lty = 2, col = "red")
+abline(v = c(x.lower, x.upper), lty = 2, col = "red")
 polygon(x.coord, y.coord, density = 20)
 lines(x.chest, y.norm, col = "red")
 axis(side = 1, at = seq(32, 48, by = 2), labels = seq(32, 48, by = 2))
@@ -225,7 +230,7 @@ library(ggplot2)
 ####  Mean $\pm$ SD 
 
 ```{r, mean plus minus sd, , fig.width = 6, fig.height = 4}
-(g2 <- g1 + geom_vline(xintercept = c(38, 42), linetype = "dotted", colour = "red")) 
+(g2 <- g1 + geom_vline(xintercept = c(x.lower, x.upper), linetype = "dashed", colour = "black")) 
 ```
 
 #### x-axis label and main title
@@ -237,7 +242,7 @@ library(ggplot2)
 #### Shading the area
 
 ```{r, polygon, fig.width = 6, fig.height = 4}
-(g4 <- g3 + geom_polygon(aes(x = x.coord, y = y.coord), data = data.frame(x.coord, y.coord), alpha = 0.3, fill = "red"))
+(g4 <- g3 + geom_polygon(aes(x = x.coord, y = y.coord), data = data.frame(x.coord, y.coord), alpha = 0.5, fill = "grey"))
 ```
 
 #### Normal curve added
