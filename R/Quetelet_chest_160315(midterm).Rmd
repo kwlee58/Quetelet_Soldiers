@@ -135,13 +135,6 @@ list(breaks = h.chest$breaks, counts = h.chest$counts, density = h.chest$density
 hist(chest.long, probability = TRUE, breaks = 32.5:48.5)
 ```
 
-* 위의 히스토그램을 그리느라고 계산된 값들은?
-
-```{r, histogram2 objects}
-h.chest.2 <- hist(chest.long, breaks = 32.5:48.5, plot = FALSE)
-list(breaks = h.chest.2$breaks, counts = h.chest.2$counts, density = h.chest.2$density, mids = h.chest.2$mids)
-```
-
 * 히스토그램을 보기 쉽게 하기 위해서 메인 타이틀과 서브 타이틀, x축 라벨, y축 라벨 설정
 
 ```{r, annotations, fig.width = 8, fig.height = 4.5}
@@ -169,6 +162,8 @@ abline(v = c(x.lower, x.upper), lty = 2, col = "red")
 * 그 사이의 영역을 빗금으로 표시하기 위하여 다각형의 좌표를 계산
 
 ```{r, coordinates of polygon}
+h.chest.2 <- hist(chest.long, breaks = 32.5:48.5, plot = FALSE)
+h.chest.2
 h.chest.2$density[6:10]
 y <- h.chest.2$density[6:10]
 ```
@@ -185,7 +180,7 @@ abline(v = c(x.lower, x.upper), lty = 2, col = "red")
 polygon(poly.df, density = 20)
 ```
 
-* 이론적으로 빗금친 부분의 면적은 `pnorm(1) - pnorm(-1) = ``r pnorm(1) - pnorm(-1)`에 가까울 것으로 예상. 5개 직사각형의 면적을 구하여 합하는 과정은 다음과 같음.
+* 이론적으로 빗금친 부분의 면적은 `pnorm(1)-pnorm(-1)=``r pnorm(1)-pnorm(-1)`에 가까울 것으로 예상. 5개의 직사각형의 면적을 구하여 합하는 과정은 다음과 같음.
 
 ```{r, area of shaded area}
 options(digits = 2)
@@ -233,16 +228,10 @@ axis(side = 2)
 
 ```{r, ggplots, fig.width = 8, fig.height = 4.5}
 library(ggplot2)
-# theme_update(plot.title = element_text(hjust = 0.5)) 
-g0 <- ggplot(data = data.frame(chest.long), mapping = aes(x = chest.long)) 
-(g1 <- g0 +
-  stat_bin(aes(y = ..density..), binwidth = 1, fill = "white", colour = "black"))
-# (g1 <- g0 + 
-#  stat_count(fill = "white", colour = "black"))
-# (g1 <- g0 + 
-#  geom_histogram(aes(y = ..density..), binwidth = 1, fill = "white", colour = "black"))
-# (g1 <- g0 + 
-#  geom_histogram(aes(y = ..density..), binwidth = 1, breaks = 32.5:48.5, fill = "white", colour = "black"))
+(g0 <- ggplot(data.frame(chest.long), aes(x = chest.long)) + 
+  geom_histogram(aes(y = ..density..), binwidth = 1, fill = "white", colour = "black"))
+(g1 <- ggplot(data.frame(chest.long), aes(x = chest.long)) + 
+  geom_histogram(aes(y = ..density..), binwidth = 1, breaks = 32.5:48.5, fill = "white", colour = "black"))
 
 ```
 
@@ -259,13 +248,7 @@ g0 <- ggplot(data = data.frame(chest.long), mapping = aes(x = chest.long))
 (g3 <- g2 + 
    theme_bw() + 
    xlab("Chest Circumferences (Inches)") + 
-   ggtitle("Quetelet's Scottish Soldiers Data") +
-   theme(plot.title = element_text(hjust = 0.5)))
-# (g3 <- g2 + 
-#   theme_bw() + 
-#   theme_update(plot.title = element_text(hjust = 0.5)) +
-#   xlab("Chest Circumferences (Inches)") + 
-#   ggtitle("Quetelet's Scottish Soldiers Data"))
+   ggtitle("Quetelet's Scottish Soldiers Data"))
 ```
 
 #### Shading the area

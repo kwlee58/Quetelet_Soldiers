@@ -11,7 +11,7 @@ BMI data revisited
 - rn96 자료 읽어들이기
 
 ```{r}
-rn96<-read.table("rn96.txt",header=T,sep="")
+rn96<-read.table("../data/rn96.txt",header=T,sep="")
 rn96
 BMI<-round(rn96$weight/(rn96$height/100)^2,digits=1)
 BMI
@@ -22,7 +22,7 @@ data.frame(rn96,BMI)
 - 정규분포 여부를 검증하는 nortest 패키지 설치
 
 ```{r}
-install.packages("nortest", )
+install.packages("nortest", repos = "https://cran.rstudio.com")
 library(nortest)
 ```
 
