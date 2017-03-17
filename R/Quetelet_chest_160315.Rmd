@@ -250,7 +250,7 @@ g0 <- ggplot(data = data.frame(chest.long), mapping = aes(x = chest.long))
 
 ```{r, mean plus minus sd, fig.width = 8, fig.height = 4.5}
 (g2 <- g1 + 
-   geom_vline(xintercept = c(x.lower, x.upper), linetype = "dashed", colour = "black")) 
+   geom_vline(xintercept = c(x.lower, x.upper), linetype = "dotted", colour = "red")) 
 ```
 
 #### x-axis label and main title
@@ -258,31 +258,27 @@ g0 <- ggplot(data = data.frame(chest.long), mapping = aes(x = chest.long))
 ``````{r, xlab and ggtitle, fig.width = 8, fig.height = 4.5}
 (g3 <- g2 + 
    theme_bw() + 
-   xlab("Chest Circumferences (Inches)") + 
-   ggtitle("Quetelet's Scottish Soldiers Data") +
+   xlab(x.lab) + 
+   ylab(y.lab) +
+   ggtitle(main.title) +
    theme(plot.title = element_text(hjust = 0.5)))
-# (g3 <- g2 + 
-#   theme_bw() + 
-#   theme_update(plot.title = element_text(hjust = 0.5)) +
-#   xlab("Chest Circumferences (Inches)") + 
-#   ggtitle("Quetelet's Scottish Soldiers Data"))
 ```
 
 #### Shading the area
 
 ```{r, polygon, fig.width = 8, fig.height = 4.5}
 (g4 <- g3 + 
-   geom_polygon(aes(x = x, y = y), data = poly.df, alpha = 0.5, fill = "grey"))
+   geom_polygon(data = poly.df, mapping = aes(x = x, y = y), alpha = 0.5, fill = "grey"))
 ```
 
 #### Normal curve added
 
 ```{r, normal curve, fig.width = 8, fig.height = 4.5}
-x.curve <- seq(32.5, 48.5, length = 100)
-y.curve <- dnorm(x.curve, mean = mean.chest, sd = sd.chest)
-curve.df <- data.frame(x = x.curve, y = y.curve)
+# x.curve <- seq(32.5, 48.5, length = 100)
+# y.curve <- dnorm(x.curve, mean = mean.chest, sd = sd.chest)
+curve.df <- data.frame(x = x.chest, y = y.norm)
 (g5 <- g4 + 
-  geom_line(aes(x = x, y = y), data = curve.df, colour = "blue"))
+  geom_line(data = curve.df, mapping = aes(x = x, y = y), colour = "blue"))
 ```
 
 #### x-axis tick marks 
