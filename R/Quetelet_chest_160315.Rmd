@@ -258,9 +258,10 @@ g0 <- ggplot(data = data.frame(chest.long), mapping = aes(x = chest.long))
 ``````{r, xlab and ggtitle, fig.width = 8, fig.height = 4.5}
 (g3 <- g2 + 
    theme_bw() + 
-   xlab(x.lab) + 
-   ylab(y.lab) +
-   ggtitle(main.title) +
+#   xlab(x.lab) + 
+#   ylab(y.lab) +
+#   ggtitle(main.title) +
+   labs(x = x.lab, y = y.lab, title = main.title) +
    theme(plot.title = element_text(hjust = 0.5)))
 ```
 
