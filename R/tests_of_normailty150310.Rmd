@@ -1,0 +1,93 @@
+---
+title: "Tests of Normality"
+author: "coop711"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+### `nortest` 패키지 설치
+
+```{r}
+# install.packages("nortest", repos="https://cran.rstudio.com/")
+library(nortest)
+```
+
+- nortest 패키지의 설명문서 열어보기
+
+```{r}
+help(package = nortest)
+```
+
+- ad.test, cvm.test, lillie.test 등은 모두 EDF 기반의 도구임. 기본적으로 표본분포함수와 정규분포함수를 비교하는 것임.
+
+
+## Quetelet의 가슴둘레자료 정규분포 적합도
+
+### Data
+
+```{r, load}
+load("./Quetelet_chest.RData")
+ls()
+```
+
+- 다음 네 장의 그림을 비교하면 어떤 것이 가장 자료의 특징을 잘 나타낸다고 볼 수 있는가? 함께 그린 정규곡선 밀도함수를 보고 판단하시오.
+
+```{r fig.width = 12, fig.height = 6}
+par(mfrow = c(2, 2))
+x <- x.chest
+h1 <- hist(chest.long, prob = TRUE, ylim = c(0, 0.2))
+curve(dnorm(x, mean.chest, sd.chest), add = TRUE, col = "red")
+h2 <- hist(chest.long, prob = TRUE, right = FALSE, ylim = c(0, 0.2))
+curve(dnorm(x, mean.chest, sd.chest), add = TRUE, col = "red")
+h3 <- hist(chest.long, prob = TRUE, breaks = 32.5:48.5, ylim = c(0, 0.2))
+curve(dnorm(x, mean.chest, sd.chest), add = TRUE, col = "red")
+r.noise <- runif(5738) - 0.5
+h4 <- hist(chest.long + r.noise, prob = TRUE, ylim = c(0, 0.2))
+curve(dnorm(x, mean.chest, sd.chest), add = TRUE, col = "red")
+```
+
+- 랜덤 노이즈를 더하고 breaks도 조정하면
+
+```{r fig.width = 6, fig.height = 4}
+par(mfrow = c(1, 1))
+h5 <- hist(chest.long + r.noise, prob = TRUE, breaks = 32.5:48.5, ylim = c(0, 0.2))
+curve(dnorm(x, mean.chest, sd.chest), add = TRUE, col = "red")
+```
+
+- 각각의 히스토그램들을 그릴 때 사용한 breaks와 counts 값을 추적 
+
+```{r}
+h1
+list(h1$breaks, h1$counts)
+list(h2$breaks, h2$counts)
+list(h3$breaks, h3$counts)
+list(h4$breaks, h4$counts)
+list(h5$breaks, h5$counts)
+````
+
+- 정규분포 테스트를 적용해 보면?
+
+```{r}
+chest.noise <- chest.long + r.noise
+apply(cbind(chest.long, chest.noise), 2, ad.test)
+apply(cbind(chest.long, chest.noise), 2, cvm.test)
+apply(cbind(chest.long, chest.noise), 2, lillie.test)
+apply(cbind(chest.long, chest.noise), 2, pearson.test)
+```
+
+- sf.test()는 크기가 5000이하인 경우에만 사용할 수 있으므로 랜덤표본 추출 후 적용
+
+```{r}
+id.sample <- sample(1:5738, size = 5000)
+chest.long.sample <- chest.long[id.sample]
+chest.noise.sample <- chest.noise[id.sample]
+apply(cbind(chest.long.sample, chest.noise.sample), 2, sf.test)
+```
+
+- qqnorm() 을 그려보면 
+
+```{r fig.width = 5, fig.height = 10}
+par(mfrow = c(2, 1))
+qqnorm(chest.long, main = "Normal Q-Q Plot w.o. Noise")
+qqnorm(chest.noise, main = "Normal Q-Q Plot with Noise")
+```

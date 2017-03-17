@@ -292,3 +292,8 @@ curve.df <- data.frame(x = x.curve, y = y.curve)
    scale_x_continuous(breaks = seq(32, 48, by = 2), labels = seq(32, 48, by = 2)))
 ```
 
+### Save
+
+```{r, save}
+save.image(file = "./Quetelet_chest.RData")
+```
